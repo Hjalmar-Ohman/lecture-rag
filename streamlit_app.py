@@ -25,7 +25,7 @@ if "messages" not in st.session_state.keys():
     st.session_state.messages = [
         {
             "role": "assistant",
-            "content": "Ask me a question about the lectures!",
+            "content": "Ask me a question about the lectures! For example 'What is a Ripple-Carry adder?'",
         }
     ]
 
@@ -38,13 +38,15 @@ def load_data():
         text="Loading lecture notes – hang tight! This should take 1-2 minutes."
     ):
         # Load lecture notes using SimpleDirectoryReader from "./data" recursively
-        docs = SimpleDirectoryReader(input_dir="./data", recursive=True).load_data()
+        docs = SimpleDirectoryReader(
+            input_dir="./lecture slides", recursive=True
+        ).load_data()
         # Set up a ServiceContext with default settings and OpenAI model for responses
         service_context = ServiceContext.from_defaults(
             llm=OpenAI(
                 model="gpt-3.5-turbo",
                 temperature=0.5,
-                system_prompt="You are an expert on lecture notes, answering questions for exams. Keep responses technical and factual, avoiding hallucinations.",
+                system_prompt="You are an expert on lecture notes, answering questions for exams. Keep responses technical and factual, avoiding hallucinations. Always be specific to what document and page I can read more about the topic, for example 'This is discussed in Lecture_1_Slides.pdf page 5'",
             )
         )
         # Create a VectorStoreIndex for efficient organization and indexing
