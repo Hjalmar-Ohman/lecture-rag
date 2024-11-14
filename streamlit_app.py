@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import openai
 from llama_index.llms.openai import OpenAI
@@ -6,6 +7,15 @@ from llama_index.core import (
     SimpleDirectoryReader,
     Settings
 )
+import nltk
+
+# Set custom NLTK data directory
+nltk_data_dir = "/tmp/nltk_data"
+os.makedirs(nltk_data_dir, exist_ok=True)
+nltk.data.path.append(nltk_data_dir)
+
+# Download 'punkt' tokenizer to the custom directory
+nltk.download('punkt', download_dir=nltk_data_dir)
 
 st.set_page_config(
     page_title="Chat with the lecture notes",
