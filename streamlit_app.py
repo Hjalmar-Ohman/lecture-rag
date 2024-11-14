@@ -3,9 +3,8 @@ import openai
 from llama_index.llms.openai import OpenAI
 from llama_index.core import (
     VectorStoreIndex,
-    ServiceContext,
-    Document,
     SimpleDirectoryReader,
+    Settings
 )
 
 st.set_page_config(
@@ -34,23 +33,19 @@ if "messages" not in st.session_state.keys():
 @st.cache_resource(show_spinner=False)
 def load_data():
     # Display a spinner message for ongoing data loading
-    with st.spinner(
-        text="Loading lecture notes – hang tight! This should take 1-2 minutes."
-    ):
-        # Load lecture notes using SimpleDirectoryReader from "./data" recursively
-        docs = SimpleDirectoryReader(
-            input_dir="./lecture slides", recursive=True
-        ).load_data()
-        # Set up a ServiceContext with default settings and OpenAI model for responses
-        service_context = ServiceContext.from_defaults(
-            llm=OpenAI(
-                model="gpt-3.5-turbo",
-                temperature=0.5,
-                system_prompt="You are an expert on lecture notes, answering questions for exams. Keep responses technical and factual, avoiding hallucinations. Always be specific to what document and page I can read more about the topic, for example 'This is discussed in Lecture_1_Slides.pdf page 5'",
-            )
+    with st.spinner("Loading lecture notes – hang tight! This should take 1-2 minutes."):
+        reader = SimpleDirectoryReader(input_dir="./lecture slides", recursive=True)
+        docs = reader.load_data()
+        Settings.llm = OpenAI(
+            model="gpt-4o-mini",
+            temperature=0.5,
+            system_prompt="""You are an expert on lecture notes, answering questions for exams. 
+            Keep responses technical and factual, avoiding hallucinations. 
+            Always be specific to what document and page I can read more about the topic, 
+            for example 'This is discussed in Lecture_1_Slides.pdf page 5'""",
         )
-        # Create a VectorStoreIndex for efficient organization and indexing
-        return VectorStoreIndex.from_documents(docs, service_context=service_context)
+        index = VectorStoreIndex.from_documents(docs)
+        return index
 
 
 index = load_data()
