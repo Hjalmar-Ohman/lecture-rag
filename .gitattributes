@@ -1,0 +1,6 @@
+# Treat all files in nltk_data as binary to avoid line-ending conversion
+nltk_data/** binary
+
+# Alternatively, specify files to keep Unix line endings
+*.pickle binary
+*.txt text eol=lf
